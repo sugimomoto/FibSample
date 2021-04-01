@@ -1,29 +1,31 @@
 package main
 
-import(
+import (
 	"fmt"
-	"math/rand"
 	"time"
 )
 
-func fib(number float64) float64{
+func fib(number float64, ch chan string) {
 	x, y := 1.0, 1.0
 	for i := 0; i < int(number); i++ {
-		x,y = y, x + y
+		x, y = y, x+y
 	}
 
-	r := rand.Intn(3)
-	time.Sleep(time.Duration(r) * time.Second)
-
-	return x
+	ch <- fmt.Sprintf("Fib(%v): %v\n", number, x)
 }
 
-func main(){
+func main() {
 	start := time.Now()
+	size := 5
 
-	for i := 0; i < 15; i++ {
-		n := fib(float64(i)
-		fmt.Printf("fib(%v):%v\n"),i,n)
+	ch := make(chan string, size)
+
+	for i := 0; i < size; i++ {
+		go fib(float64(i), ch)
+	}
+
+	for i := 0; i < size; i++ {
+		fmt.Printf(<-ch)
 	}
 
 	elapsed := time.Since(start)
